@@ -3,6 +3,6 @@ A university asssignment where we as a group create a simple threaded Chat serve
 
 The people involved:
 * Peder Bergebakken Sundt (pbsds)
-* Silje Sævig ()
+* Silje Sævig (SuperSilje)
 * Andreas Suorza Sørensen (andsuor)
-* Au-Dung Vuong ()
+* Au-Dung Vuong (audungv)
