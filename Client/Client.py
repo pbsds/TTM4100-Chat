@@ -3,11 +3,13 @@ import socket
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
 
+#123test
+
 class Client:
     """
     This is the chat client class
     """
-
+	
     def __init__(self, host, server_port):
         """
         This method is run when creating a new Client object
