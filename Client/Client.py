@@ -3,7 +3,7 @@
 import socket
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
-import select, sys
+import select, sys, json
 from Queue import Queue
 
 #The client handles user input and messge output asymetrically, which makes for a nices interface.
@@ -15,16 +15,31 @@ def GetChar():
 	return ""
 
 
-class Client:
+class Client():
 	"""
 	This is the chat client class
 	"""
 	terminal_width = 80#windows width
 	
+	help_text="""== Using the client: ==
+If the prompt says "Username: ", you've yet to log in.
+Type your wanted username and wait for the server to verify.
+The prompt with then change to "msg: ", which means you can start
+chatting away.
+
+== Commands: ==
+The client supports a few commands:
+/help: displays this help text
+/logout or /exit: logs out from the server and disconnects
+/names or /who: Queries the server for a list of who is present on the server.
+/shelp: Queries the server for its help text.
+"""
+	
 	def __init__(self, host, server_port):
 		"""
 		This method is run when creating a new Client object
 		"""
+		self.host = (host, server_port)
 		
 		# Set up the socket connection to the server
 		self.connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,6 +47,9 @@ class Client:
 		# Set up the incoming messages queue:
 		self.queue = Queue()
 		self.prompt = ["username: ", []]
+		
+		#ech
+		self.MessageParser = MessageParser()
 		
 		self.run()
 	def run(self):
@@ -41,19 +59,42 @@ class Client:
 		mode = 0#{0: push username, 1: send messages}
 		
 		self.print_message("Welome to our totally awesome chat client!")
-		self.print_message("If you need help with using some commands, type /help")
-		self.print_message("Connecting to %s:%s" % ())
+		self.print_message("If you need help with using the client, type /help")
+		self.print_message("If you need help with using the server, type /shelp")
+		self.print_message("Connecting to %s:%s..." % self.host)
 		self.print_message("")
-		self.print_message("Please select as userhandle to go by:")
+		
+		self.prompt[0] = "Username: "
+		self.print_message("Please select a username to go by:")
+		
 		
 		while 1:
 			out = handle_input()
 			if out:
-				pass
-			
+				if out[0] == "/"#commands:
+					command = out[1:].split(" ")[0]
+					if command  == "help":
+						self.print_message(self.help_text)
+					elif command == "logout":
+						self.send_logout()
+					elif command == "exit":
+						self.send_logout()
+					elif command == "names":
+						self.send_names()
+					elif command == "who":
+						self.send_names()
+					elif command == "shelp":
+						self.send_help()
+						
+				elif mode == 0:#username
+					pass
+				else:#message
+					pass
+				
+					
 			if not self.queue.empty():
 				data = self.queue.get()
-				message = MessageParser.parse(date)
+				message = self.MessageParser.parse(data)
 				self.queue.task_done()
 				
 				if message[0] in ("Error", "Info"):
@@ -97,6 +138,26 @@ class Client:
 		
 		#recreate prompt:
 		sys.stdout.write(self.prompt[0] + ("".join(self.prompt[1]))[-terminal_width+1+len(self.prompt[0]):])
+	def send_login(self, username):
+		out = {"request":"login"}
+		out["content"] == username
+		send_payload(json.dumps(out))
+	def send_msg(self, message):
+		out = {"request":"msg"}
+		out["content"] == message
+		send_payload(json.dumps(out))
+	def send_logout(self):#todo: also handle disconnecting
+		out = {"request":"logout"}
+		out["content"] == None
+		send_payload(json.dumps(out))
+	def send_names(self):#ask for a list of users
+		out = {"request":"names"}
+		out["content"] == None
+		send_payload(json.dumps(out))
+	def send_help(self):#ask server for help
+		out = {"request":"help"}
+		out["content"] == None
+		send_payload(json.dumps(out))
 	#events:
 	def disconnect(self):
 		# TODO: Handle disconnection
@@ -107,6 +168,7 @@ class Client:
 	def send_payload(self, data):
 		# TODO: Handle sending of a payload
 		pass
+		
 
 
 if __name__ == '__main__':
