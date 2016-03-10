@@ -4,8 +4,6 @@ from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
 
 
-#123test 2
-
 class Client:
     """
     This is the chat client class
