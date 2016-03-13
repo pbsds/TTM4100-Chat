@@ -8,7 +8,7 @@ class MessageParser():
             'error': self.parse_error,
             'info': self.parse_info,
             'message': self.parse_message,
-            'history': self.parse_history,
+            'history': self.parse_history
 
             # Need these if MessageParser is used by the server.
             #'login': self.parse_login,
