@@ -14,12 +14,11 @@ def GetChar():
 		return sys.stdin.read(1)
 	return ""
 
-
 class Client():
 	"""
 	This is the chat client class
 	"""
-	terminal_width = 80#windows width
+	terminal_width = 80#windows width, maybe implement a check for unix terminals? nah!
 	
 	help_text="""== Using the client: ==
 If the prompt says "Username: ", you've yet to log in.
@@ -48,8 +47,10 @@ The client supports a few commands:
 		self.queue = Queue()
 		self.prompt = ["username: ", []]
 		
-		#ech
+		#ech, spis meg
 		self.MessageParser = MessageParser()
+		self.MessageReceiver = MessageReceiver(self.connection, self)
+		self.MessageReceiver.start()
 		
 		self.run()
 	def run(self):
@@ -95,7 +96,7 @@ The client supports a few commands:
 			if not self.queue.empty():
 				data = self.queue.get()
 				message = self.MessageParser.parse(data)
-				self.queue.task_done()
+				self.queue.task_done()#neccesary? nah...
 				
 				if message[0] in ("Error", "Info"):
 					if message[0] == "Info" and message[1] == "Login successful":
@@ -161,13 +162,13 @@ The client supports a few commands:
 	#events:
 	def disconnect(self):
 		# TODO: Handle disconnection
+		# poke
 		pass
 		
 	def receive_message(self, message):#works with threads
-		self.queue.put(message, True, None)
+		self.queue.put(message, True, None)#2threadingsafe4u
 	def send_payload(self, data):
-		# TODO: Handle sending of a payload
-		pass
+		self.connection.write(data)#ez
 		
 
 

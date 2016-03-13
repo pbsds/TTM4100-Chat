@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from threading import Thread
+import json
 
 class MessageReceiver(Thread):
     """
@@ -17,7 +18,15 @@ class MessageReceiver(Thread):
         self.daemon = True
 
         # TODO: Finish initialization of MessageReceiver
-
+		
+		self.connection = connection
+		self.client = client
+		#self.run() iscalled by the thread
     def run(self):
         # TODO: Make MessageReceiver receive and handle payloads
-        pass
+        
+		while 1:
+			#assume no fragmentation? yes, why not?
+			payload = self.connection.recv(1024)
+			self.client.receive_message(payload)
+			
