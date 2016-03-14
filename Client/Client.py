@@ -3,16 +3,11 @@
 import socket
 from MessageReceiver import MessageReceiver
 from MessageParser import MessageParser
-import select, sys, json
+import sys, json
 from Queue import Queue
+from GetChar import GetCharFiltered as GetChar
 
-#The client handles user input and messge output asymetrically, which makes for a nices interface.
-
-#reads a single character from stdin, if any
-def GetChar():
-	if select.select([sys.stdin], [], [], 0) == ([sys.stdin], [], []):
-		return sys.stdin.read(1)
-	return ""
+#The client handles user input and message output asyncronously, which makes for a nices interface.
 
 class Client():
 	"""
@@ -120,6 +115,8 @@ The client supports a few commands:
 				ret = "".join(self.prompt[1])
 				self.prompt[1] = []
 				return ret
+			elif char == "\b":
+				self.prompt[1].pop(-1)
 			else:
 				self.prompt[1].append(char)
 			self.refresh_prompt()
