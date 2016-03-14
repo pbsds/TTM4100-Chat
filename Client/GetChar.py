@@ -23,6 +23,7 @@ except ImportError:#unix
 	def getch():
 		fd = sys.stdin.fileno()
 		old_settings = termios.tcgetattr(fd)
+		ch = ""
 		try:
 			tty.setraw(fd)
 			ch = sys.stdin.read(1)
@@ -32,12 +33,13 @@ except ImportError:#unix
 		return ch
 	class timeout:
 		error_message = "Timeout"
-		def __init__(self, seconds, error_message=None):
+		def __init__(self, seconds=1, error_message=None):
 			self.seconds = seconds
 			if error_message:
 				self.error_message = error_message
 		def handle_timeout(self, signum, frame):
-			raise TimeoutError(self.error_message)
+			#raise TimeoutError(self.error_message)#apparantly not defined
+			raise Exception(self.error_message)
 		def __enter__(self):
 			signal.signal(signal.SIGALRM, self.handle_timeout)
 			signal.alarm(self.seconds)
@@ -45,9 +47,9 @@ except ImportError:#unix
 			signal.alarm(0)
 	def GetChar():
 		k = ""
-		with timeout(0.02):
+		with timeout(1):#todo: make this timeout smaller somehow.
 			k = getch()
-		if ord(k) == 3:
+		if k == "\x03":
 			raise KeyboardInterrupt
 		elif k == "\r":
 			return "\n"
