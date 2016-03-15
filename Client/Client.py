@@ -45,12 +45,12 @@ The client supports a few commands:
 		#ech, spis meg
 		self.MessageParser = MessageParser()
 		self.MessageReceiver = MessageReceiver(self.connection, self)
-		self.MessageReceiver.start()
 		
 		self.run()
 	def run(self):
 		# Initiate the connection to the server
-		self.connection.connect((self.host, self.server_port))
+		self.connection.connect((self.host[0], self.host[1]))
+		self.MessageReceiver.start()
 		
 		mode = 0#{0: push username, 1: send messages}
 		
@@ -67,7 +67,7 @@ The client supports a few commands:
 		while 1:
 			out = handle_input()
 			if out:
-				if out[0] == "/"#commands:
+				if out[0] == "/":#commands:
 					command = out[1:].split(" ")[0]
 					if command  == "help":
 						self.print_message(self.help_text)
@@ -135,7 +135,7 @@ The client supports a few commands:
 			sys.stdout.write("\r%s\r" % (" "*(self.terminal_width-1)))
 		
 		#recreate prompt:
-		sys.stdout.write(self.prompt[0] + ("".join(self.prompt[1]))[-terminal_width+1+len(self.prompt[0]):])
+		sys.stdout.write(self.prompt[0] + ("".join(self.prompt[1]))[-self.terminal_width+1+len(self.prompt[0]):])
 	def send_login(self, username):
 		out = {"request":"login"}
 		out["content"] == username
