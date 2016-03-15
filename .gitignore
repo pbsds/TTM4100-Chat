@@ -45,6 +45,12 @@ coverage.xml
 *,cover
 .hypothesis/
 
+.DS_Store
+.AppleDouble
+.LSOverride
+.metadata
+.thumbsDB.ini
+
 # Translations
 *.mo
 *.pot
