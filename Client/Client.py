@@ -91,22 +91,22 @@ The client supports a few commands:
 					
 			if not self.queue.empty():
 				data = self.queue.get()
-				message = self.MessageParser.parse(data)
+				response, timestamp, sender, content = self.MessageParser.parse(data)
 				self.queue.task_done()#neccesary? nah...
 				
-				if message[0] in ("Error", "Info"):
-					if message[0] == "Info" and message[1] == "Login successful":
+				if response in ("Error", "Info"):
+					if response == "Info" and "success" in message.lower():
 						mode = 1
 						self.prompt[0] == "msg: "
-						#self.refresh_prompt()#is handeled below instead
-					self.print_message("%s: %s" % (message[0], message[1]))
-				elif message[0] == "Message":
-					#todo after message reciever is finished
-					User = "<user>"
-					msg = "<msg>"
-					self.print_message("%s: %s" % (user, msg))
-				elif message[0] == "History":
-					pass
+						#self.refresh_prompt()#is handeled in the print below instead
+					self.print_message("%s: %s" % (response, content))
+				elif response == "Message":
+					self.print_message("%s: %s" % (sender, content))
+				elif response == "History":
+					for i in content:
+						if i["response"] == "Message":
+							self.print_message("%s: %s" % (i["sender"], i["content"]))
+						
 	#run() helpers:
 	def handle_input(self):#call each iteration, handles user input, returns a string if enter is pressed:
 		char = GetChar()
