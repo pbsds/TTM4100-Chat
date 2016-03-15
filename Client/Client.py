@@ -72,6 +72,7 @@ The client supports a few commands:
 						self.print_message(self.help_text)
 					elif command == "logout" and mode==1:
 						self.send_logout()
+						self.disconnect()
 					elif command == "exit":
 						self.send_logout()
 					elif command == "names" and mode==1:
@@ -80,6 +81,8 @@ The client supports a few commands:
 						self.send_names()
 					elif command == "shelp":
 						self.send_help()
+					else:
+						self.print_message("Unknown command \"/%s\"" % command)
 						
 				elif mode == 0:#username
 					self.send_login(out)
@@ -94,15 +97,15 @@ The client supports a few commands:
 				response, timestamp, sender, content = self.MessageParser.parse(data)
 				self.queue.task_done()#neccesary? nah...
 				
-				if response in ("Error", "Info"):
-					if response == "Info" and "success" in message.lower():
+				if response.lower() in ("error", "info"):
+					if response.lower() == "info" and "success" in content.lower():
 						mode = 1
-						self.prompt[0] == "msg: "
+						self.prompt[0] = "msg: "
 						#self.refresh_prompt()#is handeled in the print below instead
 					self.print_message("%s: %s" % (response, content))
-				elif response == "Message":
+				elif response.lower() == "message":
 					self.print_message("%s: %s" % (sender, content))
-				elif response == "History":
+				elif response.lower() == "history":
 					for i in content:
 						if i["response"] == "Message":
 							self.print_message("%s: %s" % (i["sender"], i["content"]))
@@ -161,10 +164,8 @@ The client supports a few commands:
 		self.send_payload(json.dumps(out))
 	#events:
 	def disconnect(self):
-		# TODO: Handle disconnection
-		# poke
-		pass
-		
+		self.connection.close()
+		sys.exit(0)
 	def receive_message(self, message):#works with threads
 		self.queue.put(message, True, None)#2threadingsafe4u
 	def send_payload(self, data):

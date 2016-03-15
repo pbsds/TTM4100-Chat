@@ -17,13 +17,12 @@ class MessageReceiver(Thread):
 		
 		# Flag to run thread as a deamon
 		self.daemon = True
-
+		
 		# TODO: Finish initialization of MessageReceiver
 		
 		self.connection = connection
 		self.client = client
 		#self.run() is called by the thread
-		
 		
 	def run(self):
 		#i assume all json start with { and end with }
