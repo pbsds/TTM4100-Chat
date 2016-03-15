@@ -36,6 +36,7 @@ class ClientHandler(SocketServer.BaseRequestHandler):
                 if recv_dict['request'] == 'logout':
                     #send logout successfull eller noe
                     login = False #logg ut brukeren
+                    #server_close();
                 if recv_dict['request'] == 'msg':
                     message = recv_dict['content']
                 #send denne til alle brukerene med timestamp, sender, response, content
