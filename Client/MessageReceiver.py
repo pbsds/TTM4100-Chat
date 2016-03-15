@@ -26,13 +26,30 @@ class MessageReceiver(Thread):
 		
 		
 	def run(self):
-		# TODO: Make MessageReceiver receive and handle payloads
-		
+		#i assume all json start with { and end with }
+		buffer = ""
 		self.connection.connect((self.client.host[0], self.client.host[1]))
 		
 		
 		while 1:
-			#assume no fragmentation? yes, why not?
-			payload = self.connection.recv(1024)
-			self.client.receive_message(payload)
+			#assumes fragmentation:
+			buffer += self.connection.recv(1024)
+			
+			#check if buffer contains a finished json:
+			message = None
+			deep = 0
+			for e, i in enumerate(buffer):
+				if i == "{":
+					deep += 1
+				elif i == "}":
+					deep -= 1
+					if deep == 0:
+						message = buffer[:e+1]
+						buffer = buffer[e+1:]
+						break
+					if deep < 0:
+						print "invalid json"
+						sys.exit(1)
+			if message:
+				self.client.receive_message(message)
 			

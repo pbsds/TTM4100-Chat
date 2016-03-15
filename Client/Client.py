@@ -70,13 +70,13 @@ The client supports a few commands:
 					command = out[1:].split(" ")[0]
 					if command  == "help":
 						self.print_message(self.help_text)
-					elif command == "logout":
+					elif command == "logout" and mode==1:
 						self.send_logout()
 					elif command == "exit":
 						self.send_logout()
-					elif command == "names":
+					elif command == "names" and mode==1:
 						self.send_names()
-					elif command == "who":
+					elif command == "who" and mode==1:
 						self.send_names()
 					elif command == "shelp":
 						self.send_help()
@@ -85,7 +85,8 @@ The client supports a few commands:
 					self.send_login(out)
 					self.print_message("logging in as %s..." % out)
 				else:#message
-					pass
+					self.send_msg(out)
+					pass#server should echo the message
 				
 					
 			if not self.queue.empty():
@@ -117,7 +118,8 @@ The client supports a few commands:
 				self.refresh_prompt()
 				return ret
 			elif char == "\b":
-				self.prompt[1].pop(-1)
+				if self.prompt[1]:
+					self.prompt[1].pop(-1)
 			else:
 				self.prompt[1].append(char)
 			self.refresh_prompt()
