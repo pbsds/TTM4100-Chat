@@ -28,6 +28,8 @@ class MessageReceiver(Thread):
 	def run(self):
 		# TODO: Make MessageReceiver receive and handle payloads
 		
+		self.connection.connect((self.client.host[0], self.client.host[1]))
+		
 		
 		while 1:
 			#assume no fragmentation? yes, why not?

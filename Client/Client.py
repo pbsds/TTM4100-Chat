@@ -49,7 +49,6 @@ The client supports a few commands:
 		self.run()
 	def run(self):
 		# Initiate the connection to the server
-		self.connection.connect((self.host[0], self.host[1]))
 		self.MessageReceiver.start()
 		
 		mode = 0#{0: push username, 1: send messages}
@@ -65,7 +64,7 @@ The client supports a few commands:
 		
 		
 		while 1:
-			out = handle_input()
+			out = self.handle_input()
 			if out:
 				if out[0] == "/":#commands:
 					command = out[1:].split(" ")[0]
@@ -83,7 +82,8 @@ The client supports a few commands:
 						self.send_help()
 						
 				elif mode == 0:#username
-					pass
+					self.send_login(out)
+					self.print_message("logging in as %s..." % out)
 				else:#message
 					pass
 				
@@ -107,13 +107,14 @@ The client supports a few commands:
 				elif message[0] == "History":
 					pass
 	#run() helpers:
-	def handle_input(self, string):#call each iteration, handles user input, returns a string if enter is pressed:
+	def handle_input(self):#call each iteration, handles user input, returns a string if enter is pressed:
 		char = GetChar()
 		
 		if char:
 			if char == "\n":
 				ret = "".join(self.prompt[1])
 				self.prompt[1] = []
+				self.refresh_prompt()
 				return ret
 			elif char == "\b":
 				self.prompt[1].pop(-1)
@@ -138,24 +139,24 @@ The client supports a few commands:
 		sys.stdout.write(self.prompt[0] + ("".join(self.prompt[1]))[-self.terminal_width+1+len(self.prompt[0]):])
 	def send_login(self, username):
 		out = {"request":"login"}
-		out["content"] == username
-		send_payload(json.dumps(out))
+		out["content"] = username
+		self.send_payload(json.dumps(out))
 	def send_msg(self, message):
 		out = {"request":"msg"}
-		out["content"] == message
-		send_payload(json.dumps(out))
+		out["content"] = message
+		self.send_payload(json.dumps(out))
 	def send_logout(self):#todo: also handle disconnecting
 		out = {"request":"logout"}
-		out["content"] == None
-		send_payload(json.dumps(out))
+		out["content"] = None
+		self.send_payload(json.dumps(out))
 	def send_names(self):#ask for a list of users
 		out = {"request":"names"}
-		out["content"] == None
-		send_payload(json.dumps(out))
+		out["content"] = None
+		self.send_payload(json.dumps(out))
 	def send_help(self):#ask server for help
 		out = {"request":"help"}
-		out["content"] == None
-		send_payload(json.dumps(out))
+		out["content"] = None
+		self.send_payload(json.dumps(out))
 	#events:
 	def disconnect(self):
 		# TODO: Handle disconnection
@@ -165,7 +166,7 @@ The client supports a few commands:
 	def receive_message(self, message):#works with threads
 		self.queue.put(message, True, None)#2threadingsafe4u
 	def send_payload(self, data):
-		self.connection.write(data)#ez
+		self.connection.send(data)#2ez4u
 		
 
 
