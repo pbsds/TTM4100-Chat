@@ -1,6 +1,6 @@
 #non-blocking stdin read for asyncronus input
 
-FILTER = set("abcdefghijklmnopqrstuvwxyz ,;.:-_'*!\"#%&/()=?@${[]}+\0123456789<>|\n\b")
+FILTER = set("abcdefghijklmnopqrstuvwxyz ,;.:-_'*!\"#%&/()=?@${[]}+\\0123456789<>|\n\b")
 
 def GetCharFiltered():
 	k = GetChar()
