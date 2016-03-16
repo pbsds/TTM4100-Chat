@@ -9,6 +9,7 @@ must be written here (e.g. a dictionary for connected clients)
 
 users = {}#[userName] = ClientHandler
 history =[]
+response_lower = True
 
 class ClientHandler(SocketServer.BaseRequestHandler):
 	"""
@@ -75,7 +76,7 @@ names should send a request to list all the usernames currently connected to the
 					for user in users.keys():
 						if user <> userName:
 							try:
-								users[user].connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': response.lower(), 'content': content}))
+								users[user].connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': response.lower() if response_lower else response, 'content': content}))
 								#send denne til alle brukerene med timestamp, sender, response, content
 							except:
 								pass
@@ -97,13 +98,13 @@ names should send a request to list all the usernames currently connected to the
 						users[userName] = self
 						
 						#Send tilbake et json objekt med timestamp, sender, response (login successfull) og content
-						self.connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': "Info".lower(), 'content': "Login successful"}))
+						self.connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': "info" if response_lower else "Info", 'content': "Login successful"}))
 						
 						#send history:
 						response = "History"
 						content = []
 						for date, sendie, message in history:
-							content.append({'timestamp': date, 'sender': sendie, 'response': "Message", 'content': message})
+							content.append({'timestamp': date, 'sender': sendie, 'response': "Message" if response_lower else "Message", 'content': message})
 						
 						print userName, "logged in"
 						
@@ -116,7 +117,7 @@ names should send a request to list all the usernames currently connected to the
 					content = "Invalid request (you're not logged in)"
 			
 			#send responce to user:
-			dict = {'timestamp': timestamp, 'sender': sender, 'response': response.lower(), 'content': content};
+			dict = {'timestamp': timestamp, 'sender': sender, 'response': response.lower() if response_lower else response, 'content': content};
 			self.connection.send(json.dumps(dict))
 		
 		#cleanup:
@@ -139,7 +140,8 @@ if __name__ == "__main__":
 
 	No alterations are necessary
 	"""
-	HOST, PORT = 'localhost', 9998
+	#HOST, PORT = 'localhost', 9998
+	HOST, PORT = '0.0.0.0', 9998
 	print 'Server running...'
 
 	# Set up and initiate the TCP server

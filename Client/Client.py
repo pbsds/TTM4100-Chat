@@ -98,7 +98,7 @@ The client supports a few commands:
 				self.queue.task_done()#neccesary? nah...
 				
 				if response.lower() in ("error", "info"):
-					if response.lower() == "info" and "success" in content.lower() or "logged in" in content.lower():
+					if response.lower() == "info" and ("success" in content.lower() or "logged in" in content.lower()):
 						mode = 1
 						self.prompt[0] = "msg: "
 						#self.refresh_prompt()#is handeled in the print below instead
@@ -111,7 +111,7 @@ The client supports a few commands:
 					for i in content:
 						try:
 							i = json.loads(i)
-						except:
+						except TypeError:
 							pass
 						if i["response"].lower() == "message":
 							self.print_message("%s: %s" % (i["sender"], i["content"]))
