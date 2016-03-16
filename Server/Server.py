@@ -116,7 +116,7 @@ names should send a request to list all the usernames currently connected to the
 					content = "Invalid request (you're not logged in)"
 			
 			#send responce to user:
-			dict = {'timestamp': timestamp, 'sender': sender, 'response': response, 'content': content};
+			dict = {'timestamp': timestamp, 'sender': sender, 'response': response.lower(), 'content': content};
 			self.connection.send(json.dumps(dict))
 		
 		#cleanup:
