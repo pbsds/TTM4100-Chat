@@ -75,7 +75,7 @@ names should send a request to list all the usernames currently connected to the
 					for user in users.keys():
 						if user <> userName:
 							try:
-								users[user].connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': response, 'content': content}))
+								users[user].connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': response.lower(), 'content': content}))
 								#send denne til alle brukerene med timestamp, sender, response, content
 							except:
 								pass
@@ -97,7 +97,7 @@ names should send a request to list all the usernames currently connected to the
 						users[userName] = self
 						
 						#Send tilbake et json objekt med timestamp, sender, response (login successfull) og content
-						self.connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': "Info", 'content': "Login successful"}))
+						self.connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': "Info".lower(), 'content': "Login successful"}))
 						
 						#send history:
 						response = "History"
