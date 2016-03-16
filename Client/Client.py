@@ -107,7 +107,7 @@ The client supports a few commands:
 					self.print_message("%s: %s" % (sender, content))
 				elif response.lower() == "history":
 					for i in content:
-						if i["response"] == "Message":
+						if i["response"].lower() == "message":
 							self.print_message("%s: %s" % (i["sender"], i["content"]))
 						
 	#run() helpers:

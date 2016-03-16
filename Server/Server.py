@@ -82,7 +82,6 @@ names should send a request to list all the usernames currently connected to the
 					
 					#add message to history:
 					history.append((timestamp, sender, content))#make it more threadsafe? nah
-					
 				elif recv_dict['request'] == 'names':
 					content = ", ".join(users.keys())
 					#send tilbake en liste med brukere
@@ -96,15 +95,25 @@ names should send a request to list all the usernames currently connected to the
 						userName = chkUserName
 						login = True
 						users[userName] = self
-					
+						
 						#Send tilbake et json objekt med timestamp, sender, response (login successfull) og content
-						content = "Login successful"
+						self.connection.send(json.dumps({'timestamp': timestamp, 'sender': sender, 'response': "Info", 'content': "Login successful"}))
+						
+						#send history:
+						response = "History"
+						content = []
+						for date, sendie, message in history:
+							content.append({'timestamp': date, 'sender': sendie, 'response': "Message", 'content': message})
+						
 						print userName, "logged in"
 						
 					else:#send en errormelding fordi man ikke er logget inn
 						response = "Error"
 						content = "Illegal request or username already taken."
 						print self.ip, "failed logging in with the username", chkUserName
+				else:#error
+					response = "Error"
+					content = "Invalid request (you're not logged in)"
 			
 			#send responce to user:
 			dict = {'timestamp': timestamp, 'sender': sender, 'response': response, 'content': content};
