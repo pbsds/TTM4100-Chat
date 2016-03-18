@@ -9,7 +9,10 @@ must be written here (e.g. a dictionary for connected clients)
 
 users = {}#[userName] = ClientHandler
 history =[]
+
+#compatibility with the studass server:
 response_lower = True
+history_json = True
 
 class ClientHandler(SocketServer.BaseRequestHandler):
 	"""
@@ -104,7 +107,10 @@ names should send a request to list all the usernames currently connected to the
 						response = "History"
 						content = []
 						for date, sendie, message in history:
-							content.append({'timestamp': date, 'sender': sendie, 'response': "Message" if response_lower else "Message", 'content': message})
+							if history_json:
+								content.append(json.dumps({'timestamp': date, 'sender': sendie, 'response': "Message" if response_lower else "Message", 'content': message}))
+							else:
+								content.append({'timestamp': date, 'sender': sendie, 'response': "Message" if response_lower else "Message", 'content': message})
 						
 						print userName, "logged in"
 						
